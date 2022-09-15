@@ -1,4 +1,5 @@
 from decimal import Decimal
+from itertools import product
 from store.models import Product, Collection, Review
 from rest_framework import serializers
 
@@ -30,4 +31,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ['id', 'name', 'created_at', 'description', 'product']
+        fields = ['id', 'name', 'created_at', 'description']
+
+    def create(self, validated_data):
+        return Review.objects.create(product_id=self.context['product_id'], **validated_data)
