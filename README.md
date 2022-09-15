@@ -1,5 +1,5 @@
 # DJANGO Eccomerce API
-An api based django eccomerce
+An api base django eccomerce
 <br />
 
 # Instalation
