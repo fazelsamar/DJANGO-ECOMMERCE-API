@@ -1,4 +1,3 @@
-from gc import collect
 from django.db.models.aggregates import Count
 
 from rest_framework.viewsets import ModelViewSet
