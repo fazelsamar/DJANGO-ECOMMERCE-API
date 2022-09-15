@@ -9,6 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Collection, OrderItem, Product, Review
 from .serializers import CollectionSerializer, ProductSerializer, ReviewSerializer
 from .filters import ProductFilter
+from .pagination import DefaultLimitOffsetPagination
 
 
 class ProductViewSet(ModelViewSet):
@@ -16,6 +17,7 @@ class ProductViewSet(ModelViewSet):
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
+    pagination_class = DefaultLimitOffsetPagination
     search_fields = ['title', 'description']
     ordering = ['unit_price', 'unit_price']
     ordering_fields = ['id', 'unit_price', 'updated_at']
