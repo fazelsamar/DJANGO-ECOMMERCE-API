@@ -6,3 +6,6 @@ An api base django eccomerce
 ```
 pip install -r requirements.txt
 ```
+```
+python manage.py migrate
+```
