@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     'django_filters',
     'debug_toolbar',
 
-    'playgroud.apps.PlaygroudConfig',
-    'store.apps.StoreConfig',
-    'store_custom.apps.StoreCustomConfig',
-    'tags.apps.TagsConfig',
-    'likes.apps.LikesConfig',
+    'playgroud',
+    'store',
+    'tags',
+    'likes',
+    'core',
 ]
 
 MIDDLEWARE = [
