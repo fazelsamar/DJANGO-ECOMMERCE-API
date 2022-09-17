@@ -33,7 +33,8 @@ class ProductViewSet(ModelViewSet):
 
 
 class CollectionViewSet(ModelViewSet):
-    queryset = models.Collection.objects.annotate(products_count=Count('products'))
+    queryset = models.Collection.objects.annotate(
+        products_count=Count('products'))
     serializer_class = serializers.CollectionSerializer
 
     def destroy(self, request, *args, **kwargs):
@@ -59,3 +60,22 @@ class CartViewSet(CreateModelMixin,
                   GenericViewSet):
     queryset = models.Cart.objects.prefetch_related('items__product')
     serializer_class = serializers.CartSerializer
+
+
+class CartItemViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete']
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return serializers.AddCartItemSerializer
+        elif self.request.method == 'PATCH':
+            return serializers.UpdateCartItemSerializer
+        return serializers.CartItemSerializer
+
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk']}
+
+    def get_queryset(self):
+        return models.CartItem.objects \
+            .filter(cart_id=self.kwargs['cart_pk']) \
+            .prefetch_related('product')
