@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     'django_filters',
     'debug_toolbar',
 
-    'playgroud.apps.PlaygroudConfig',
-    'store.apps.StoreConfig',
-    'store_custom.apps.StoreCustomConfig',
-    'tags.apps.TagsConfig',
-    'likes.apps.LikesConfig',
+    'playgroud',
+    'store',
+    'tags',
+    'likes',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +149,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'core.User'
