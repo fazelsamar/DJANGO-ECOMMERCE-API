@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -79,3 +79,8 @@ class CartItemViewSet(ModelViewSet):
         return models.CartItem.objects \
             .filter(cart_id=self.kwargs['cart_pk']) \
             .prefetch_related('product')
+
+
+class CustomerViewSet(CreateModelMixin, UpdateModelMixin, RetrieveModelMixin, GenericViewSet):
+    serializer_class = serializers.CustomerSerializer
+    queryset = models.Customer.objects
