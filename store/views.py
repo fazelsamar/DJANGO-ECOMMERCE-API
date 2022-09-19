@@ -3,9 +3,9 @@ from django.db.models.aggregates import Count
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.decorators import action
-from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, UpdateModelMixin
+from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -13,6 +13,7 @@ from . import models
 from . import serializers
 from .filters import ProductFilter
 from .pagination import DefaultLimitOffsetPagination
+from .permissions import IsAdminOrReadOnly
 
 
 class ProductViewSet(ModelViewSet):
@@ -21,6 +22,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
     pagination_class = DefaultLimitOffsetPagination
+    permission_classes = [IsAdminOrReadOnly]
     search_fields = ['title', 'description']
     ordering = ['unit_price', 'unit_price']
     ordering_fields = ['id', 'unit_price', 'updated_at']
@@ -38,6 +40,7 @@ class CollectionViewSet(ModelViewSet):
     queryset = models.Collection.objects.annotate(
         products_count=Count('products'))
     serializer_class = serializers.CollectionSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
     def destroy(self, request, *args, **kwargs):
         if models.Product.objects.filter(collection_id=kwargs['pk']).count() > 0:
@@ -83,27 +86,33 @@ class CartItemViewSet(ModelViewSet):
             .prefetch_related('product')
 
 
-class CustomerViewSet(CreateModelMixin, UpdateModelMixin, RetrieveModelMixin, GenericViewSet):
+class CustomerViewSet(ModelViewSet):
     serializer_class = serializers.CustomerSerializer
     queryset = models.Customer.objects
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return [AllowAny()]
-        return [IsAuthenticated()]
-
-    @action(detail=False, methods=['GET', 'PUT'])
+    @action(detail=False, methods=['GET', 'PUT', 'POST'], permission_classes=[IsAuthenticated])
     def me(self, request):
         try:
             customer = models.Customer.objects.get(id=request.user.id)
         except models.Customer.DoesNotExist:
-            return Response({'msg': 'Customer profile not found'}, status=status.HTTP_400_BAD_REQUEST)
+            customer = None
         if request.method == 'GET':
+            if not customer:
+                return Response({'msg': 'Customer profile not found'}, status=status.HTTP_400_BAD_REQUEST)
             serializer = serializers.CustomerSerializer(customer)
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif request.method == 'PUT':
+            if not customer:
+                return Response({'msg': 'Customer profile not found'}, status=status.HTTP_400_BAD_REQUEST)
             serializer = serializers.CustomerSerializer(customer, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif request.method == 'POST':
+            if customer:
+                return Response({'msg': 'Customer profile is already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = serializers.CustomerSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
