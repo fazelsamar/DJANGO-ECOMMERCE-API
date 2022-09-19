@@ -100,3 +100,12 @@ class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['id', 'user', 'phone', 'birth_date', 'membership']
+
+
+class CreateUserCustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['phone', 'birth_date', 'membership']
+
+    def create(self, validated_data, **kwargs):
+        return Customer.objects.create(user=self.context['user'], **validated_data)

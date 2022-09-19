@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, DjangoModelPermissions
 from rest_framework.decorators import action
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -13,7 +13,7 @@ from . import models
 from . import serializers
 from .filters import ProductFilter
 from .pagination import DefaultLimitOffsetPagination
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, FullDjangoModelPermissions
 
 
 class ProductViewSet(ModelViewSet):
@@ -89,31 +89,25 @@ class CartItemViewSet(ModelViewSet):
 class CustomerViewSet(ModelViewSet):
     serializer_class = serializers.CustomerSerializer
     queryset = models.Customer.objects
-    permission_classes = [IsAdminUser]
+    permission_classes = [FullDjangoModelPermissions]
 
-    @action(detail=False, methods=['GET', 'PUT', 'POST'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated], serializer_class=serializers.CreateUserCustomerSerializer)
     def me(self, request):
         try:
-            customer = models.Customer.objects.get(id=request.user.id)
+            customer = models.Customer.objects.get(user_id=request.user.id)
         except models.Customer.DoesNotExist:
             customer = None
         if request.method == 'GET':
             if not customer:
-                return Response({'msg': 'Customer profile not found'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'msg': 'Customer profile not found'}, status=status.HTTP_404_NOT_FOUND)
             serializer = serializers.CustomerSerializer(customer)
             return Response(serializer.data, status=status.HTTP_200_OK)
         elif request.method == 'PUT':
             if not customer:
-                return Response({'msg': 'Customer profile not found'}, status=status.HTTP_400_BAD_REQUEST)
-            serializer = serializers.CustomerSerializer(customer, data=request.data)
+                serializer = serializers.CreateUserCustomerSerializer(data=request.data, context={'user': request.user})
+            else:
+                serializer = serializers.CreateUserCustomerSerializer(customer, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        elif request.method == 'POST':
-            if customer:
-                return Response({'msg': 'Customer profile is already exists.'}, status=status.HTTP_400_BAD_REQUEST)
-            serializer = serializers.CustomerSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
             
