@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.decorators import action
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -22,7 +22,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
     pagination_class = DefaultLimitOffsetPagination
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [DjangoModelPermissions]
     search_fields = ['title', 'description']
     ordering = ['unit_price', 'unit_price']
     ordering_fields = ['id', 'unit_price', 'updated_at']
@@ -40,7 +40,7 @@ class CollectionViewSet(ModelViewSet):
     queryset = models.Collection.objects.annotate(
         products_count=Count('products'))
     serializer_class = serializers.CollectionSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [DjangoModelPermissions]
 
     def destroy(self, request, *args, **kwargs):
         if models.Product.objects.filter(collection_id=kwargs['pk']).count() > 0:
@@ -51,6 +51,7 @@ class CollectionViewSet(ModelViewSet):
 class ReviewViewSet(ModelViewSet):
     queryset = models.Review.objects
     serializer_class = serializers.ReviewSerializer
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         return models.Review.objects.filter(product_id=self.kwargs['product_pk'])
@@ -63,7 +64,7 @@ class CartViewSet(CreateModelMixin,
                   RetrieveModelMixin,
                   DestroyModelMixin,
                   GenericViewSet):
-    queryset = models.Cart.objects.prefetch_related('items__product')
+    queryset = models.Cart.objects.prefetch_related('cartitems__product')
     serializer_class = serializers.CartSerializer
 
 
@@ -97,15 +98,17 @@ class CustomerViewSet(ModelViewSet):
             customer = models.Customer.objects.get(user_id=request.user.id)
         except models.Customer.DoesNotExist:
             customer = None
+
         if request.method == 'GET':
             if not customer:
                 return Response({'msg': 'Customer profile not found'}, status=status.HTTP_404_NOT_FOUND)
             serializer = serializers.CustomerSerializer(customer)
             return Response(serializer.data, status=status.HTTP_200_OK)
+            
         elif request.method == 'PUT':
-            if not customer:
+            if not customer: #Create Customer
                 serializer = serializers.CreateUserCustomerSerializer(data=request.data, context={'user': request.user})
-            else:
+            else: #Update customer
                 serializer = serializers.CreateUserCustomerSerializer(customer, data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()

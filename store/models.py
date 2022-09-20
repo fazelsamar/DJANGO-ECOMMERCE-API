@@ -1,10 +1,11 @@
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
 from django.db import models
+from django.core.validators import MinValueValidator
 
 User = get_user_model()
+
 
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
@@ -54,10 +55,11 @@ class Customer(models.Model):
         (MEMBERSHIP_GOLD, 'Gold'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255, null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     membership = models.CharField(
-        max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
+        max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE
+    )
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
@@ -70,6 +72,7 @@ class Order(models.Model):
     PAYMENT_STATUS_PENDING = 'P'
     PAYMENT_STATUS_COMPLETE = 'C'
     PAYMENT_STATUS_FAILED = 'F'
+
     PAYMENT_STATUS_CHOICES = [
         (PAYMENT_STATUS_PENDING, 'Pending'),
         (PAYMENT_STATUS_COMPLETE, 'Complete'),
@@ -78,7 +81,8 @@ class Order(models.Model):
 
     placed_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(
-        max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
+        max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING
+    )
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
 
@@ -93,7 +97,8 @@ class Address(models.Model):
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE)
+        Customer, on_delete=models.CASCADE
+    )
 
 
 class Cart(models.Model):
@@ -102,12 +107,13 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cartitems')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField()
 
     class Meta:
         unique_together = [['cart', 'product']]
+
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
