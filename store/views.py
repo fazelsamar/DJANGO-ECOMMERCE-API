@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, IsAdminUser
 from rest_framework.decorators import action
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -114,3 +114,35 @@ class CustomerViewSet(ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
             
+
+class OrderViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = serializers.CreateOrderSerializer(
+            data=request.data,
+            context={'user': self.request.user},
+        )
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+        serializer = serializers.OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return serializers.CreateOrderSerializer
+        elif self.request.method == 'PATCH':
+            return serializers.UpdateOrderSerializer
+        return serializers.OrderSerializer
+        
+    def get_queryset(self):
+        user =self.request.user
+        if user.is_staff:
+            return models.Order.objects.all()
+        customer_id = models.Customer.objects.only('id').get(user_id=user.id)
+        return models.Order.objects.filter(customer_id=customer_id)
