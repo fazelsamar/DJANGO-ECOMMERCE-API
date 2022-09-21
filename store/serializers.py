@@ -140,7 +140,7 @@ class CreateOrderSerializer(serializers.Serializer):
         if not models.Cart.objects.filter(id=cart_id).exists():
             raise serializers.ValidationError('No cart with given ID was found')
 
-        if not models.CartItem.objects.filter(cart_id=cart_id).count() == 0:
+        if models.CartItem.objects.filter(cart_id=cart_id).count() == 0:
             raise serializers.ValidationError('The given cart has no items')
         return cart_id
 
