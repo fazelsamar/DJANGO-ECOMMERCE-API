@@ -123,5 +123,12 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'placed_at', 'customer']
 
 
-admin.site.register(models.Cart)
-admin.site.register(models.CartItem)
+class CartItemInline(admin.TabularInline):
+    model = models.CartItem
+    extra = 0
+
+
+@admin.register(models.Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id']
+    inlines = [CartItemInline]
