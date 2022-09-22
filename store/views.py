@@ -12,7 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from . import models
 from . import serializers
 from .filters import ProductFilter
-from .pagination import DefaultLimitOffsetPagination
+from .pagination import DefaultPageNumberPagination
 from .permissions import IsAdminOrReadOnly, FullDjangoModelPermissions
 
 
@@ -21,7 +21,7 @@ class ProductViewSet(ModelViewSet):
     serializer_class = serializers.ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
-    pagination_class = DefaultLimitOffsetPagination
+    pagination_class = DefaultPageNumberPagination
     permission_classes = [DjangoModelPermissions]
     search_fields = ['title', 'description']
     ordering = ['unit_price', 'unit_price']
