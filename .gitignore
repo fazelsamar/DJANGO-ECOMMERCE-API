@@ -1,6 +1,9 @@
 # Created by https://www.gitignore.io
 /venv
 /media
+/staticfiles
+/mediafiles
+/db_files
 ### OSX ###
 .DS_Store
 .AppleDouble
@@ -84,6 +87,7 @@ target/
 *.pot
 *.pyc
 __pycache__/
+**/__pycache__/*
 local_settings.py
 
 .env

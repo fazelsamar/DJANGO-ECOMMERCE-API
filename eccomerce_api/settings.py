@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-6p%or!5c5_7e(#um8z)*!$tf93vt596p36#qfkwwa-=j)qrax(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -102,14 +102,39 @@ WSGI_APPLICATION = 'eccomerce_api.wsgi.application'
 # }
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'OPTIONS': {
+#             'read_default_file': str(BASE_DIR / 'my.cnf',)
+#         },
+#     }
+# }
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': str(BASE_DIR / 'my.cnf',)
-        },
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('POSTGRES_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': 'db',
+        'PORT': 5432,
     }
 }
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'mydatabase',
+#         'HOST': 'db',
+#         'PORT': 3306,
+#         'USER': 'root',
+#         'PASSWORD': 'some_password',
+#         'OPTIONS': {'sql_mode': 'STRICT_ALL_TABLES', 'charset': 'utf8mb4',},
+#     }
+# }
 
 
 # Password validation
@@ -146,10 +171,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = 'media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
