@@ -4,8 +4,5 @@ An api base django eccomerce
 
 # Instalation
 ```
-pip install -r requirements.txt
-```
-```
-python manage.py migrate
+docker-compose up --build
 ```
