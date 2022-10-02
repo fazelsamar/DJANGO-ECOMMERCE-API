@@ -1,8 +1,6 @@
 from django.shortcuts import render
-from store.models import Product
+from .tasks import notify_customers
+
 def hello(r):
-    q = Product.objects.select_related('collection').all()
-    for i in q:
-        i.collection.id
-    context = {}
-    return render(r, 'playground/index.html', context)
+    notify_customers.delay('hello')
+    return render(r, 'playground/index.html')
