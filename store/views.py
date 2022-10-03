@@ -3,7 +3,7 @@ from django.db.models.aggregates import Count
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly, IsAdminUser
 from rest_framework.decorators import action
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -50,7 +50,7 @@ class CollectionViewSet(ModelViewSet):
     queryset = models.Collection.objects.annotate(
         products_count=Count('products'))
     serializer_class = serializers.CollectionSerializer
-    permission_classes = [DjangoModelPermissions]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
 
     def destroy(self, request, *args, **kwargs):
         if models.Product.objects.filter(collection_id=kwargs['pk']).count() > 0:

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import Permission
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.contenttypes.admin import GenericTabularInline
 
@@ -19,6 +20,8 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
+
+admin.site.register(Permission)
 
 
 class TagInline(GenericTabularInline):

@@ -4,7 +4,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register('products', views.ProductViewSet, basename='products')
-router.register('collection', views.CollectionViewSet)
+router.register('collections', views.CollectionViewSet)
 router.register('carts', views.CartViewSet, basename='carts')
 router.register('customers', views.CustomerViewSet)
 router.register('orders', views.OrderViewSet, basename='orders')

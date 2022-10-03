@@ -17,9 +17,13 @@ pillow = "*"
 psycopg2-binary = "*"
 redis = "*"
 flower = "*"
+pytest-watch = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
+pytest-django = "*"
+pytest = "*"
+model-bakery = "*"
 
 [requires]
 python_version = "3.10"
