@@ -26,6 +26,7 @@ services:
       - ./staticfiles:/usr/src/app/staticfiles
       - ./mediafiles:/usr/src/app/mediafiles
     environment:
+      - IS_POSTGRESQL=1
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres_aefjawef32234234
