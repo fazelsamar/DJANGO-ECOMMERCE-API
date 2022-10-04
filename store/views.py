@@ -22,7 +22,7 @@ class ProductViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
     pagination_class = DefaultPageNumberPagination
-    permission_classes = [DjangoModelPermissions]
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     search_fields = ['title', 'description']
     ordering = ['unit_price', 'unit_price']
     ordering_fields = ['id', 'unit_price', 'updated_at']

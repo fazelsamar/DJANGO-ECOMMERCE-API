@@ -54,31 +54,31 @@ services:
       - 6379:6379
     restart: always
 
-  celery:
-    build: .
-    command: celery -A eccomerce_api worker --loglevel=info
-    depends_on:
-      - redis
-    volumes:
-      - .:/usr/src/app/
+  # celery:
+  #   build: .
+  #   command: celery -A eccomerce_api worker --loglevel=info
+  #   depends_on:
+  #     - redis
+  #   volumes:
+  #     - .:/usr/src/app/
 
-  celery-beat:
-    build: .
-    command: celery -A eccomerce_api beat
-    depends_on:
-      - redis
-      - celery
-    volumes:
-      - .:/usr/src/app/
+  # celery-beat:
+  #   build: .
+  #   command: celery -A eccomerce_api beat
+  #   depends_on:
+  #     - redis
+  #     - celery
+  #   volumes:
+  #     - .:/usr/src/app/
 
-  flower:
-    build: .
-    command: celery -A eccomerce_api flower
-    depends_on:
-      - redis
-      - celery
-      - celery-beat
-    ports:
-      - 5555:5555
-    volumes:
-      - .:/usr/src/app/
+  # flower:
+  #   build: .
+  #   command: celery -A eccomerce_api flower
+  #   depends_on:
+  #     - redis
+  #     - celery
+  #     - celery-beat
+  #   ports:
+  #     - 5555:5555
+  #   volumes:
+  #     - .:/usr/src/app/

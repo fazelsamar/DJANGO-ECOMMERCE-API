@@ -24,6 +24,8 @@ django-debug-toolbar = "*"
 pytest-django = "*"
 pytest = "*"
 model-bakery = "*"
+locust = "*"
+django-silk = "*"
 
 [requires]
 python_version = "3.10"
