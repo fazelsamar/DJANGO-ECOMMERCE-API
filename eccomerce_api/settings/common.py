@@ -15,19 +15,7 @@ from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6p%or!5c5_7e(#um8z)*!$tf93vt596p36#qfkwwa-=j)qrax('
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Application definition
@@ -43,10 +31,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'djoser',
-    'debug_toolbar',
-    'silk',
+    # 'debug_toolbar',
+    # 'silk',
 
-    'playground',
+    # 'playground',
     'store',
     'tags',
     'likes',
@@ -55,7 +43,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     # "debug_toolbar.middleware.DebugToolbarMiddleware",
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     # "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -64,12 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'silk.middleware.SilkyMiddleware',
 ]
-
-# if DEBUG:
-#     MIDDLEWARE += [
-#         'silk.middleware.SilkyMiddleware',
-#     ]
 
 INTERNAL_IPS = [
     # ...
@@ -117,25 +100,6 @@ WSGI_APPLICATION = 'eccomerce_api.wsgi.application'
 #         },
 #     }
 # }
-
-if 'IS_POSTGRESQL' in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ.get('POSTGRES_NAME'),
-            'USER': os.environ.get('POSTGRES_USER'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-            'HOST': 'postgres',
-            'PORT': 5432,
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
 
 
 # DATABASES = {
