@@ -18,6 +18,8 @@ psycopg2-binary = "*"
 redis = "*"
 flower = "*"
 pytest-watch = "*"
+django-redis = "*"
+whitenoise = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
